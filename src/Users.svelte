@@ -43,7 +43,11 @@
         <User {key} bind:user={$users[key]} bind:errors/>
     {/each}
     <Button on:click={addUser} disabled={errors || emptyNames}>Add user</Button>
-    <pre>
-        {JSON.stringify([$users, errors], null, 2)}
-    </pre>
+    {#if Object.keys($users).length}
+        <pre>
+            {JSON.stringify([$users, errors], null, 2)}
+        </pre>
+    {:else}
+        <p>Add some users in order to play with this magnificent form</p>
+    {/if}
 </div>
