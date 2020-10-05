@@ -1,14 +1,18 @@
 <script>
     import { users } from './data-users';
     import User from './User.svelte';
+    import Button from './Button.svelte';
     
     let errors = false;
+    $:emptyNames = Object.values($users).some(user => !user.name.trim().length);
     
     const addUser = () => {
         const id = Math.round(Math.random() * 1000);
         let name='';
         $users[`ID${id}`] = {id, name};
     }    
+
+    
 
 </script>
 
@@ -38,7 +42,7 @@
     {#each Object.keys($users) as key}
         <User {key} bind:user={$users[key]} bind:errors/>
     {/each}
-    <button on:click={addUser} disabled={errors}>Add user</button>
+    <Button on:click={addUser} disabled={errors || emptyNames}>Add user</Button>
     <pre>
         {JSON.stringify([$users, errors], null, 2)}
     </pre>

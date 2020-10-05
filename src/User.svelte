@@ -1,4 +1,5 @@
 <script>
+    import Button from './Button.svelte';
     import { users } from  './data-users';
     export let key;
     export let user;
@@ -58,13 +59,7 @@
         padding-left: .5em;
     }
 
-    button {
-        outline: none;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        padding: 5px;
-    }
+    
     
     .double, .double >input, .double>button {
         color: red;
@@ -77,8 +72,8 @@
     <div>{key}</div>
     <input type="text" bind:value={user.name} on:keyup={checkForDouble} autofocus>
     {#if !undo}
-        <button on:click={deleteUser}> 🗑️ Delete</button>
+        <Button on:click={deleteUser}> 🗑️ Delete</Button>
     {:else}
-        <button on:click={undoDeleteUser}>Undo ({counter})</button>
+        <Button on:click={undoDeleteUser}>Undo ({counter})</Button>
     {/if}
 </div>

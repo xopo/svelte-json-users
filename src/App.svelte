@@ -5,10 +5,15 @@
 </script>
 
 <main>
-	<h1>Hello</h1>
-
 	<div id="users">
 		<Users />
 		
 	</div>
 </main>
+
+<style>
+	main {
+		max-width: 840px;
+		margin: 0 auto;
+	}
+</style>
