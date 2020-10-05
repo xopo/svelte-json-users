@@ -4,6 +4,8 @@
     import Button from './Button.svelte';
     
     let errors = false;
+    let wip = [];
+    
     $:emptyNames = Object.values($users).some(user => !user.name.trim().length);
     
     const addUser = () => {
@@ -24,28 +26,18 @@
         grid-gap: 10px;
         padding: 10px;
     }
-
-    button {
-        outline: none;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        padding: 15px;
-        border: 1px solid gray;
-    }
-
 </style>
 
 <!--  ########################################################################################  -->
 
 <div id="users">
     {#each Object.keys($users) as key}
-        <User {key} bind:user={$users[key]} bind:errors/>
+        <User {key} bind:user={$users[key]} bind:errors bind:wip />
     {/each}
     <Button on:click={addUser} disabled={errors || emptyNames}>Add user</Button>
     {#if Object.keys($users).length}
         <pre>
-            {JSON.stringify([$users, errors], null, 2)}
+            {JSON.stringify([$users, errors, wip], null, 2)}
         </pre>
     {:else}
         <p>Add some users in order to play with this magnificent form</p>

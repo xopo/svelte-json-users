@@ -1,8 +1,11 @@
 <script>
 	import Users from './Users.svelte';
-	import { users } from './data-users.js';
 	 
 </script>
+
+<svelte:head>
+	<title>Simple Svelte Form</title>
+</svelte:head>
 
 <main>
 	<div id="users">
@@ -10,6 +13,7 @@
 		
 	</div>
 </main>
+
 
 <style>
 	main {

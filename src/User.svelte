@@ -1,9 +1,10 @@
 <script>
     import Button from './Button.svelte';
-    import { users } from  './data-users';
+    import { users, removeUser } from  './data-users';
     export let key;
     export let user;
     export let errors;
+    export let wip;
 
     let undo = false;
     let double = false;
@@ -12,7 +13,13 @@
     let countDown;
     let timeOut;
 
+    $: blocked = wip.length && !wip.includes(key);
+
     const deleteUser = () => {
+        if (wip.includes(key)) return false;
+
+        wip = [...wip, key];
+        console.log('delete user', key, {...user});
         undo=true;
         countDown = setInterval(() => {
             counter = counter - 1;
@@ -24,17 +31,22 @@
 
         timeOut = setTimeout(() => {
             if (undo) {
-                delete $users[key];
-                $users = $users;
-                undo=false;
+                removeUser(key)
+                clearWaiting();
             }
         }, 3000);
     }
-    const undoDeleteUser = () => {
+
+    const clearWaiting = () => {
+        wip = wip.filter(el => el!==key)
         undo = false;
         counter = 3;
+    }
+
+    const undoDeleteUser = () => {
         clearInterval(countDown);
         clearTimeout(timeOut);
+        clearWaiting();
     }
 
     const checkForDouble = () => {
@@ -70,10 +82,10 @@
 
 <div class="user" class:double>
     <div>{key}</div>
-    <input type="text" bind:value={user.name} on:keyup={checkForDouble} autofocus>
+    <input disabled={blocked} type="text" bind:value={user.name} on:keyup={checkForDouble} autofocus>
     {#if !undo}
-        <Button on:click={deleteUser}> 🗑️ Delete</Button>
+        <Button on:click={deleteUser} disabled={blocked}> 🗑️ Delete</Button>
     {:else}
-        <Button on:click={undoDeleteUser}>Undo ({counter})</Button>
+        <Button on:click={undoDeleteUser} disabled={blocked}>Undo ({counter})</Button>
     {/if}
 </div>
