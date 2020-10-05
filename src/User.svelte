@@ -6,10 +6,22 @@
 
     let undo = false;
     let double = false;
+    let counter = 3;
+
+    let countDown;
+    let timeOut;
 
     const deleteUser = () => {
         undo=true;
-        setTimeout(() => {
+        countDown = setInterval(() => {
+            counter = counter - 1;
+            if (counter <= 0) {
+                clearInterval(countDown);
+                counter = 3;
+            }
+        }, 1000);
+
+        timeOut = setTimeout(() => {
             if (undo) {
                 delete $users[key];
                 $users = $users;
@@ -19,6 +31,9 @@
     }
     const undoDeleteUser = () => {
         undo = false;
+        counter = 3;
+        clearInterval(countDown);
+        clearTimeout(timeOut);
     }
 
     const checkForDouble = () => {
@@ -40,6 +55,7 @@
         width: 100%;
         border: 1px solid gray;
         outline: none;
+        padding-left: .5em;
     }
 
     button {
@@ -63,6 +79,6 @@
     {#if !undo}
         <button on:click={deleteUser}> 🗑️ Delete</button>
     {:else}
-        <button on:click={undoDeleteUser}>Undo</button>
+        <button on:click={undoDeleteUser}>Undo ({counter})</button>
     {/if}
 </div>
