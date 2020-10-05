@@ -945,14 +945,55 @@ var app = (function () {
     	};
     }
 
+    // (50:4) {:else}
+    function create_else_block$1(ctx) {
+    	let p;
+
+    	return {
+    		c() {
+    			p = element("p");
+    			p.textContent = "Add some users in order to play with this magnificent form";
+    		},
+    		m(target, anchor) {
+    			insert(target, p, anchor);
+    		},
+    		p: noop,
+    		d(detaching) {
+    			if (detaching) detach(p);
+    		}
+    	};
+    }
+
+    // (46:4) {#if Object.keys($users).length}
+    function create_if_block$1(ctx) {
+    	let pre;
+    	let t_value = JSON.stringify([/*$users*/ ctx[2], /*errors*/ ctx[0]], null, 2) + "";
+    	let t;
+
+    	return {
+    		c() {
+    			pre = element("pre");
+    			t = text(t_value);
+    		},
+    		m(target, anchor) {
+    			insert(target, pre, anchor);
+    			append(pre, t);
+    		},
+    		p(ctx, dirty) {
+    			if (dirty & /*$users, errors*/ 5 && t_value !== (t_value = JSON.stringify([/*$users*/ ctx[2], /*errors*/ ctx[0]], null, 2) + "")) set_data(t, t_value);
+    		},
+    		d(detaching) {
+    			if (detaching) detach(pre);
+    		}
+    	};
+    }
+
     function create_fragment$2(ctx) {
     	let div;
     	let t0;
     	let button;
     	let t1;
-    	let pre;
-    	let t2_value = JSON.stringify([/*$users*/ ctx[2], /*errors*/ ctx[0]], null, 2) + "";
-    	let t2;
+    	let show_if;
     	let current;
     	let each_value = Object.keys(/*$users*/ ctx[2]);
     	let each_blocks = [];
@@ -975,6 +1016,15 @@ var app = (function () {
 
     	button.$on("click", /*addUser*/ ctx[3]);
 
+    	function select_block_type(ctx, dirty) {
+    		if (show_if == null || dirty & /*$users*/ 4) show_if = !!Object.keys(/*$users*/ ctx[2]).length;
+    		if (show_if) return create_if_block$1;
+    		return create_else_block$1;
+    	}
+
+    	let current_block_type = select_block_type(ctx, -1);
+    	let if_block = current_block_type(ctx);
+
     	return {
     		c() {
     			div = element("div");
@@ -986,8 +1036,7 @@ var app = (function () {
     			t0 = space();
     			create_component(button.$$.fragment);
     			t1 = space();
-    			pre = element("pre");
-    			t2 = text(t2_value);
+    			if_block.c();
     			attr(div, "id", "users");
     			attr(div, "class", "svelte-ibgopa");
     		},
@@ -1001,8 +1050,7 @@ var app = (function () {
     			append(div, t0);
     			mount_component(button, div, null);
     			append(div, t1);
-    			append(div, pre);
-    			append(pre, t2);
+    			if_block.m(div, null);
     			current = true;
     		},
     		p(ctx, [dirty]) {
@@ -1041,7 +1089,18 @@ var app = (function () {
     			}
 
     			button.$set(button_changes);
-    			if ((!current || dirty & /*$users, errors*/ 5) && t2_value !== (t2_value = JSON.stringify([/*$users*/ ctx[2], /*errors*/ ctx[0]], null, 2) + "")) set_data(t2, t2_value);
+
+    			if (current_block_type === (current_block_type = select_block_type(ctx, dirty)) && if_block) {
+    				if_block.p(ctx, dirty);
+    			} else {
+    				if_block.d(1);
+    				if_block = current_block_type(ctx);
+
+    				if (if_block) {
+    					if_block.c();
+    					if_block.m(div, null);
+    				}
+    			}
     		},
     		i(local) {
     			if (current) return;
@@ -1067,6 +1126,7 @@ var app = (function () {
     			if (detaching) detach(div);
     			destroy_each(each_blocks, detaching);
     			destroy_component(button);
+    			if_block.d();
     		}
     	};
     }
